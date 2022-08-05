@@ -7,3 +7,9 @@ export const reqCategoryList = ()=>instance({url: "/goods/getBaseCategoryList", 
 
 // 获取首页轮播图的接口
 export const reqGetBannerList = ()=>mockRequests.get("/banner");
+
+// 获取 floor 数据
+export const reqGetFloorList = ()=>mockRequests.get("/floor");
+
+// 获取搜索模块数据
+export const reqGetSearchInfo = (params)=>instance({url: "/goods/list", method: "post", data: params})
