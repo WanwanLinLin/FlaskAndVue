@@ -5,16 +5,16 @@
       <div class="container">
         <div class="loginList">
           <p>Nplus 欢迎您！
-          <!-- 用户登录了，显示用户信息与退出登录 ||用户没有登录，显示的是登录与注册-->
-          <!-- <p v-if="!userInfo.name">
+            <!-- 用户登录了，显示用户信息与退出登录 ||用户没有登录，显示的是登录与注册-->
+            <!-- <p v-if="!userInfo.name">
             <span>请</span> -->
             <!-- 声明式导航务必要有to属性 -->
             <router-link to="/login">登录</router-link>
             <router-link class="register" to="/register">免费注册</router-link>
-            </p>
+          </p>
           <!-- </p> -->
           <!-- <p v-else> -->
-             <!-- <a>{{userInfo.name}}</a>
+          <!-- <a>{{userInfo.name}}</a>
              <a class="register" @click="logout">退出登录</a> -->
           <!-- </p> -->
         </div>
@@ -39,18 +39,9 @@
       </h1>
       <div class="searchArea">
         <form action="###" class="searchForm">
-          <input
-            type="text"
-            id="autocomplete"
-            class="input-error input-xxlarge"
-            v-model="keyword"
-          />
-          
-          <button
-            class="sui-btn btn-xlarge btn-danger"
-            type="button"
-            @click="goSearch"
-          >
+          <input type="text" id="autocomplete" class="input-error input-xxlarge" v-model="keyword" />
+
+          <button class="sui-btn btn-xlarge btn-danger" type="button" @click="goSearch">
             搜索
           </button>
         </form>
@@ -61,32 +52,40 @@
 
 <script>
 export default {
-    name: "",
-    data(){
-      return{       
-        keyword: ""
-      }
-    },
+  name: "",
+  data() {
+    return {
+      keyword: ""
+    }
+  },
 
-    methods: {
-      goSearch(){ 
-        // this.$router.push("/search/" + this.keyword + "?k=" + 
-        // this.keyword.toUpperCase());
-        // this.$router.push(`/search/${this.keyword}?k=${this.keyword.toUpperCase()}`)
-        if(this.$route.query){
-          let location = {name: "search",
-                          params: {keyword: this.keyword || undefined},};
-          location.query = this.$route.query;
-          this.$router.push(location)
-        }
+  methods: {
+    goSearch() {
+      // this.$router.push("/search/" + this.keyword + "?k=" + 
+      // this.keyword.toUpperCase());
+      // this.$router.push(`/search/${this.keyword}?k=${this.keyword.toUpperCase()}`)
+      if (this.$route.query) {
+        let location = {
+          name: "search",
+          params: { keyword: this.keyword || undefined },
+        };
+        location.query = this.$route.query;
+        this.$router.push(location)
       }
     }
+  },
+
+  mounted() {
+    this.$bus.$on("clear", () => {
+      this.keyword = "";
+    })
+  }
 }
 </script>
 
 <style scoped lang="less">
 .header {
-  & > .top {
+  &>.top {
     background-color: #eaeaea;
     height: 30px;
     line-height: 30px;
@@ -117,7 +116,7 @@ export default {
         a {
           padding: 0 10px;
 
-          & + a {
+          &+a {
             border-left: 1px solid #b3aeae;
           }
         }
@@ -125,7 +124,7 @@ export default {
     }
   }
 
-  & > .bottom {
+  &>.bottom {
     width: 1200px;
     margin: 0 auto;
     overflow: hidden;

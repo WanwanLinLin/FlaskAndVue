@@ -1,14 +1,9 @@
 // 该文件用于引入路由
 import Vue from 'vue'
+import routes from './routes';
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter);
-
-import Home from '@/pages/Home'
-import Search from '@/pages/Search'
-import Login from '@/pages/Login'
-import Register from '@/pages/Register'
-
 
 // 重写 push 与 replace 方法
 let originPush = VueRouter.prototype.push;
@@ -34,40 +29,10 @@ VueRouter.prototype.replace = function() {
 
 // 此处用于配置路由
 export default new VueRouter({
-    routes:[
-        {
-            path: "/home",
-            component: Home,
-            meta: {show: true}
-        },
-
-        {
-            path: "/search/:keyword?",
-            component: Search,
-            meta: {show: true},
-            name: "search"
-
-        },
-
-        {
-            path: "/login",
-            component: Login,
-            meta: {show: false}
-
-        },
-
-        {
-            path: "/register",
-            component: Register,
-            meta: {show: false}
-
-        },
-
-        // 重定向
-        {
-            path: "*",
-            redirect: "/home"
-        },
-    ]
-})
+    routes,
+    // 滚动行为
+    scrollBehavior (to, from, savePosition) {
+        return { x: 0, y: 0 }
+    }
+});
 

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 商品分类三级列表 -->
     <TypeNav />
     <div class="main">
       <div class="py-container">
@@ -11,55 +12,62 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x" v-if="searchParams.categoryName">{{searchParams.categoryName}}<i @click="removeCategoryName">×</i></li>
+            <!-- 产品名字的按钮 -->
+            <li class="with-x" v-if="searchParams.categoryName">{{ searchParams.categoryName }}<i
+                @click="removeCategoryName">×</i></li>
+            <!-- 用户搜索关键字的按钮 -->
+            <li class="with-x" v-if="searchParams.keyword">{{ searchParams.keyword }}
+              <i @click="removekeyword">×</i>
+            </li>
+            <!-- 品牌的面包屑按钮 -->
+            <li class="with-x" v-if="searchParams.trademark">{{ searchParams.trademark.split(":")[1] }}
+              <i @click="removeTrademark">×</i>
+            </li>
+            <!-- 平台售卖属性的面包屑 -->
+            <li class="with-x" v-for="(prop, index) in searchParams.props" :key="index">{{ prop.split(":")[1] }}<i
+                @click="removeAttr">×</i></li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector @trademarkInfo="trademarkInfo" @attrInfo="attrInfo" />
 
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{ active: isOne }" @click="changeOrder('1')">
+                  <a>综合<span v-show="isOne" class="iconfont"
+                      :class="{ 'icon-cup': isAsc, 'icon-Down': isDesc }"></span></a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class="{ active: isTwo }" @click="changeOrder('2')">
+                  <a>价格<span v-show="isTwo" class="iconfont"
+                      :class="{ 'icon-cup': isAsc, 'icon-Down': isDesc }"></span></a>
                 </li>
               </ul>
             </div>
           </div>
           <div class="goods-list">
             <ul class="yui3-g">
-              <li class="yui3-u-1-5"  v-for="(good, index) in goodsList" :key="good.id">
+              <li class="yui3-u-1-5" 
+              v-for="(good, index) in goodsList" 
+              :key="good.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank">
-                      <img src="./images/mobile01.png" /></a>
+                    <router-link :to="`/detail/${good.id}`">
+                      <img src="./images/mobile01.png" />
+                    </router-link>
                   </div>
                   <div class="price">
                     <strong>
                       <em>¥ </em>
-                      <i>{{good.price}}</i>
+                      <i>{{ good.price }}</i>
                     </strong>
                   </div>
                   <div class="attr">
-                    <a target="_blank" href="item.html" title="促销信息，下单即赠送三个月CIBN视频会员卡！【小米电视新品4A 58 火爆预约中】">{{good.title}}</a>
+                    <a target="_blank" href="item.html" title="促销信息，下单即赠送三个月CIBN视频会员卡！【小米电视新品4A 58 火爆预约中】">{{ good.title
+                    }}</a>
                   </div>
                   <div class="commit">
                     <i class="command">已有<span>2亿</span>人评价</i>
@@ -71,37 +79,13 @@
                 </div>
               </li>
             </ul>
-            
+
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination 
+          :pageNo="searchParams.pageNo" 
+          :pageSize="searchParams.pageSize" 
+          :total="total" :continues="3"
+          @getPageNo="getPageNo" />
         </div>
       </div>
     </div>
@@ -109,211 +93,301 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import SearchSelector from './SearchSelector/SearchSelector';
+import { mapGetters, mapState } from 'vuex';
+import SearchSelector from './SearchSelector/SearchSelector';
 
-  export default {
-    name: 'Search',
+export default {
+  name: 'Search',
 
-    data() {
-      return {
-        searchParams: {
-          category1Id: "",
-          category2Id: "",
-          category3Id: "",
-          categoryName: "",
-          // 关键字
-          keyword: "",
-          order: "",
-          pageNo: 1,
-          pageSize: 5,
-          // 平台售卖的属性参数
-          props: [],
-          // 品牌
-          trademark: "",
-        }
+  data() {
+    return {
+      searchParams: {
+        category1Id: "",
+        category2Id: "",
+        category3Id: "",
+        categoryName: "",
+        // 关键字
+        keyword: "",
+        order: "1:desc",
+        pageNo: 1,
+        pageSize: 3,
+        // 平台售卖的属性参数
+        props: [],
+        // 品牌
+        trademark: "",
+      }
+    }
+  },
+
+  components: {
+    SearchSelector
+  },
+
+  // 在组件挂载完毕之前执行一次
+  beforeMount() {
+    Object.assign(this.searchParams, this.$route.query, this.$route.params)
+    // console.log(this.searchParams)
+
+  },
+
+  mounted() {
+    this.getSearchList();
+  },
+
+  computed: {
+    ...mapGetters(["goodsList"]),
+
+    isOne() {
+      return this.searchParams.order.indexOf("1") != -1;
+    },
+    isTwo() {
+      return this.searchParams.order.indexOf("2") != -1;
+    },
+
+    isAsc() {
+      return this.searchParams.order.indexOf("asc") != -1;
+    },
+
+    isDesc() {
+      return this.searchParams.order.indexOf("desc") != -1;
+    },
+
+    ...mapState({
+      total: state => state.search.searchList.total
+    })
+  },
+
+  methods: {
+    getSearchList() {
+      // 把请求封装成一个函数，当需要的时候调用即可
+      this.$store.dispatch("getSearchList", this.searchParams)
+    },
+
+    // 删除分类名字
+    removeCategoryName() {
+      // 把字段变为undefined，则该字段不会带给服务器
+      this.searchParams.categoryName = undefined;
+      this.searchParams.category1Id = undefined;
+      this.searchParams.category2Id = undefined;
+      this.searchParams.category3Id = undefined;
+      this.getSearchList();
+      // 自己跳自己
+      if (this.$route.params) {
+        // 应该只删除query参数
+        this.$router.push({ name: "search", params: this.$route.params });
       }
     },
 
-    components: {
-      SearchSelector
+    // 删除关键字
+    removekeyword() {
+      this.searchParams.keyword = undefined;
+      this.getSearchList();
+      // 应该只删除params参数
+      if (this.$route.query) {
+        this.$router.push({ name: 'search', query: this.$route.query });
+      }
+      // 通知兄弟组件Header清除关键字
+      this.$bus.$emit("clear");
     },
 
-    // 在组件挂载完毕之前执行一次
-    beforeMount() {
-      Object.assign(this.searchParams, this.$route.query, this.$route.params)
-      console.log(this.searchParams)
-
-    },
-
-    mounted(){
+    // 删除品牌信息
+    removeTrademark() {
+      // 将品牌信息置空，然后再发送请求
+      this.searchParams.trademark = undefined;
       this.getSearchList();
     },
 
-    computed: {
-      ...mapGetters(["goodsList"])
+    // 子给父通信，用的是自定义事件
+    trademarkInfo(trademark) {
+      // 整理品牌字段的参数 "ID: 品牌名称"
+      this.searchParams.trademark = `${trademark.tmId}:${trademark.tmName}`;
+      // console.log("this.searchParams.trademark的值得是：", this.searchParams.trademark)
+      this.getSearchList();
     },
 
-    methods: {
-      getSearchList() {
-        // 把请求封装成一个函数，当需要的时候调用即可
-        this.$store.dispatch("getSearchList", this.searchParams)
-      },
-
-      removeCategoryName() {
-        // 把字段变为undefined，则该字段不会带给服务器
-        this.searchParams.categoryName = undefined;
-        this.searchParams.category1Id = undefined;
-        this.searchParams.category2Id = undefined;
-        this.searchParams.category3Id = undefined;
-        this.getSearchList();
-        // 自己跳自己
-        if (this.$route.params) {
-          // 应该只删除query参数
-          this.$router.push({name: "search", params: this.$route.params});
-        }
-      },
-      
-    },
-
-    watch: {
-      // 监听路由的信息是否发生变化
-      $route(newValue, oldValue) {
-        Object.assign(this.searchParams, this.$route.query, this.$route.params);
-        // 若参数变化则重新发送请求
-        this.getSearchList();
-        // 清理旧数据
-        this.searchParams.category1Id = "";
-        this.searchParams.category2Id = "";
-        this.searchParams.category3Id = "";
-        console.log(this.searchParams);
+    // 收集平台属性的回调函数
+    attrInfo(attr, attrValue) {
+      // 首先整理好参数的格式
+      let props = `${attr.attrId}:${attrValue}:${attr.attrName}`;
+      // 数组去重
+      if (this.searchParams.props.indexOf(props) == -1) {
+        this.searchParams.props.push(props);
       }
-    }
+      this.getSearchList();
+    },
 
+    // 操纵商品降序或升序(排序)
+    changeOrder(flag) {
+      let originOrder = this.searchParams.order;
+      // 获取初始的状态
+      let originFlag = this.searchParams.order.split(":")[0];
+      let originSort = this.searchParams.order.split(":")[1];
+      let newOrder = "";
+      if (flag == originFlag) {
+        // 此处点击的一定是综合
+        newOrder = `${originFlag}:${originSort == "desc" ? "asc" : "desc"}`;
+      } else {
+        newOrder = `${flag}:${'desc'}`
+      }
+
+      this.searchParams.order = newOrder;
+      this.getSearchList();
+      console.log(this.searchParams.order);
+    },
+
+    // 删除售卖属性
+    removeAttr(index) {
+      // 再次整理参数，并再次发送请求
+      this.searchParams.props.splice(index, 1);
+      this.getSearchList();
+    },
+
+    // 获取当前的页码（自定义事件）
+    getPageNo(pageNo) {
+      // 整理带给服务器的参数并再次发送请求
+      this.searchParams.pageNo = pageNo;
+      this.getSearchList();
+    },
+
+  },
+
+  watch: {
+    // 监听路由的信息是否发生变化
+    $route(newValue, oldValue) {
+      this.searchParams.category1Id = "";
+      this.searchParams.category2Id = "";
+      this.searchParams.category3Id = "";
+      Object.assign(this.searchParams, this.$route.query, this.$route.params);
+      // 若参数变化则重新发送请求
+      this.getSearchList();
+
+    }
   }
+
+}
 </script>
 
 <style lang="less" scoped>
-  .main {
-    margin: 10px 0;
+.main {
+  margin: 10px 0;
 
-    .py-container {
-      width: 1200px;
-      margin: 0 auto;
+  .py-container {
+    width: 1200px;
+    margin: 0 auto;
 
-      .bread {
-        margin-bottom: 5px;
-        overflow: hidden;
+    .bread {
+      margin-bottom: 5px;
+      overflow: hidden;
 
-        .sui-breadcrumb {
-          padding: 3px 15px;
-          margin: 0;
-          font-weight: 400;
-          border-radius: 3px;
-          float: left;
+      .sui-breadcrumb {
+        padding: 3px 15px;
+        margin: 0;
+        font-weight: 400;
+        border-radius: 3px;
+        float: left;
 
-          li {
-            display: inline-block;
-            line-height: 18px;
+        li {
+          display: inline-block;
+          line-height: 18px;
 
-            a {
-              color: #666;
-              text-decoration: none;
-
-              &:hover {
-                color: #4cb9fc;
-              }
-            }
-          }
-        }
-
-        .sui-tag {
-          margin-top: -5px;
-          list-style: none;
-          font-size: 0;
-          line-height: 0;
-          padding: 5px 0 0;
-          margin-bottom: 18px;
-          float: left;
-
-          .with-x {
-            font-size: 12px;
-            margin: 0 5px 5px 0;
-            display: inline-block;
-            overflow: hidden;
-            color: #000;
-            background: #f7f7f7;
-            padding: 0 7px;
-            height: 20px;
-            line-height: 20px;
-            border: 1px solid #dedede;
-            white-space: nowrap;
-            transition: color 400ms;
-            cursor: pointer;
-
-            i {
-              margin-left: 10px;
-              cursor: pointer;
-              font: 400 14px tahoma;
-              display: inline-block;
-              height: 100%;
-              vertical-align: middle;
-            }
+          a {
+            color: #666;
+            text-decoration: none;
 
             &:hover {
-              color: #28a3ef;
+              color: #4cb9fc;
             }
           }
         }
       }
 
-      .details {
-        margin-bottom: 5px;
+      .sui-tag {
+        margin-top: -5px;
+        list-style: none;
+        font-size: 0;
+        line-height: 0;
+        padding: 5px 0 0;
+        margin-bottom: 18px;
+        float: left;
 
-        .sui-navbar {
-          overflow: visible;
-          margin-bottom: 0;
+        .with-x {
+          font-size: 12px;
+          margin: 0 5px 5px 0;
+          display: inline-block;
+          overflow: hidden;
+          color: #000;
+          background: #f7f7f7;
+          padding: 0 7px;
+          height: 20px;
+          line-height: 20px;
+          border: 1px solid #dedede;
+          white-space: nowrap;
+          transition: color 400ms;
+          cursor: pointer;
 
-          .filter {
-            min-height: 40px;
-            padding-right: 20px;
-            background: #fbfbfb;
-            border: 1px solid #e2e2e2;
-            padding-left: 0;
-            border-radius: 0;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+          i {
+            margin-left: 10px;
+            cursor: pointer;
+            font: 400 14px tahoma;
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+          }
 
-            .sui-nav {
-              position: relative;
-              left: 0;
-              display: block;
+          &:hover {
+            color: #28a3ef;
+          }
+        }
+      }
+    }
+
+    .details {
+      margin-bottom: 5px;
+
+      .sui-navbar {
+        overflow: visible;
+        margin-bottom: 0;
+
+        .filter {
+          min-height: 40px;
+          padding-right: 20px;
+          background: #fbfbfb;
+          border: 1px solid #e2e2e2;
+          padding-left: 0;
+          border-radius: 0;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+
+          .sui-nav {
+            position: relative;
+            left: 0;
+            display: block;
+            float: left;
+            margin: 0 10px 0 0;
+
+            li {
               float: left;
-              margin: 0 10px 0 0;
+              line-height: 18px;
 
-              li {
-                float: left;
-                line-height: 18px;
+              a {
+                display: block;
+                cursor: pointer;
+                padding: 11px 15px;
+                color: #777;
+                text-decoration: none;
+              }
 
+              &.active {
                 a {
-                  display: block;
-                  cursor: pointer;
-                  padding: 11px 15px;
-                  color: #777;
-                  text-decoration: none;
-                }
-
-                &.active {
-                  a {
-                    background: #e1251b;
-                    color: #fff;
-                  }
+                  background: #e1251b;
+                  color: #fff;
                 }
               }
             }
           }
         }
+      }
 
-          .goods-list {
+      .goods-list {
         margin: 20px 0;
 
         ul {
@@ -436,93 +510,93 @@
         }
       }
 
-        .page {
-          width: 733px;
-          height: 66px;
-          overflow: hidden;
-          float: right;
+      .page {
+        width: 733px;
+        height: 66px;
+        overflow: hidden;
+        float: right;
 
-          .sui-pagination {
-            margin: 18px 0;
+        .sui-pagination {
+          margin: 18px 0;
 
-            ul {
-              margin-left: 0;
-              margin-bottom: 0;
-              vertical-align: middle;
-              width: 490px;
-              float: left;
+          ul {
+            margin-left: 0;
+            margin-bottom: 0;
+            vertical-align: middle;
+            width: 490px;
+            float: left;
 
-              li {
+            li {
+              line-height: 18px;
+              display: inline-block;
+
+              a {
+                position: relative;
+                float: left;
                 line-height: 18px;
-                display: inline-block;
+                text-decoration: none;
+                background-color: #fff;
+                border: 1px solid #e0e9ee;
+                margin-left: -1px;
+                font-size: 14px;
+                padding: 9px 18px;
+                color: #333;
+              }
 
+              &.active {
                 a {
+                  background-color: #fff;
+                  color: #e1251b;
+                  border-color: #fff;
+                  cursor: default;
+                }
+              }
+
+              &.prev {
+                a {
+                  background-color: #fafafa;
+                }
+              }
+
+              &.disabled {
+                a {
+                  color: #999;
+                  cursor: default;
+                }
+              }
+
+              &.dotted {
+                span {
+                  margin-left: -1px;
                   position: relative;
                   float: left;
                   line-height: 18px;
                   text-decoration: none;
                   background-color: #fff;
-                  border: 1px solid #e0e9ee;
-                  margin-left: -1px;
                   font-size: 14px;
+                  border: 0;
                   padding: 9px 18px;
                   color: #333;
                 }
+              }
 
-                &.active {
-                  a {
-                    background-color: #fff;
-                    color: #e1251b;
-                    border-color: #fff;
-                    cursor: default;
-                  }
-                }
-
-                &.prev {
-                  a {
-                    background-color: #fafafa;
-                  }
-                }
-
-                &.disabled {
-                  a {
-                    color: #999;
-                    cursor: default;
-                  }
-                }
-
-                &.dotted {
-                  span {
-                    margin-left: -1px;
-                    position: relative;
-                    float: left;
-                    line-height: 18px;
-                    text-decoration: none;
-                    background-color: #fff;
-                    font-size: 14px;
-                    border: 0;
-                    padding: 9px 18px;
-                    color: #333;
-                  }
-                }
-
-                &.next {
-                  a {
-                    background-color: #fafafa;
-                  }
+              &.next {
+                a {
+                  background-color: #fafafa;
                 }
               }
             }
+          }
 
-            div {
-              color: #333;
-              font-size: 14px;
-              float: right;
-              width: 241px;
-            }
+          div {
+            color: #333;
+            font-size: 14px;
+            float: right;
+            width: 241px;
           }
         }
       }
     }
   }
+}
 </style>
