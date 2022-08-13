@@ -56,7 +56,7 @@
                 <div class="list-wrap">
                   <div class="p-img">
                     <router-link :to="`/detail/${good.id}`">
-                      <img src="./images/mobile01.png" />
+                      <img :src="good.defualtImg" />
                     </router-link>
                   </div>
                   <div class="price">
