@@ -4,19 +4,20 @@
     <div class="top">
       <div class="container">
         <div class="loginList">
-          <p>Nplus 欢迎您！
-            <!-- 用户登录了，显示用户信息与退出登录 ||用户没有登录，显示的是登录与注册-->
-            <!-- <p v-if="!userInfo.name">
-            <span>请</span> -->
+          <p>Nplus 欢迎您！</p>
+          <!-- 用户登录了，显示用户信息与退出登录 -->
+          <p v-if="!userName">
+            <span>请</span>
             <!-- 声明式导航务必要有to属性 -->
             <router-link to="/login">登录</router-link>
             <router-link class="register" to="/register">免费注册</router-link>
           </p>
-          <!-- </p> -->
-          <!-- <p v-else> -->
-          <!-- <a>{{userInfo.name}}</a>
-             <a class="register" @click="logout">退出登录</a> -->
-          <!-- </p> -->
+          <!-- 用户没有登录，显示的是登录与注册 -->
+          <p v-else>
+            <a>{{ userName }}</a>
+            <a class="register" @click="logout">退出登录</a>
+          </p>
+
         </div>
         <div class="typeList">
           <!-- <router-link to="/center/myorder">我的订单</router-link>
@@ -72,13 +73,30 @@ export default {
         location.query = this.$route.query;
         this.$router.push(location)
       }
-    }
+    },
+
+    async logout() {
+      //1.发请求通知服务器要退出登录
+      //2.清楚项目当中的数据【如token】
+      try {
+        await this.$store.dispatch("userLogout");
+        this.$router.push("/home")
+      }catch (error) {
+        alert(error.message);
+      }
+    },
   },
 
   mounted() {
     this.$bus.$on("clear", () => {
       this.keyword = "";
     })
+  },
+
+  computed: {
+    userName() {
+      return this.$store.state.user.userInfo.name;
+    }
   }
 }
 </script>

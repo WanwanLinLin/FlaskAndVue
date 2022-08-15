@@ -45,11 +45,12 @@
     </div>
     <div class="cart-tool">
       <div class="select-all">
-        <input class="chooseAll" type="checkbox" 
-        :checked="isAllChecked&&cartInfoList.length>0"
+        <input class="chooseAll" 
+        type="checkbox" 
+        :checked="isAllChecked && cartInfoList.length>0"
         @change="updateAllCartChecked"
         />
-        <span>全选</span>
+        <span>全选{{isAllChecked&&cartInfoList.length>0}}</span>
       </div>
       <div class="option">
         <a @click="deleteAllCheckedCart">删除选中的商品</a>
@@ -175,7 +176,6 @@ export default {
 
     // 计算购买产品的总价
     totalPrice() {
-      console.log(this.cartList.cartInfoList);
       let sum = 0;
       this.cartInfoList.forEach(item => {
         sum += item.purchase_num * item.price;
@@ -184,7 +184,8 @@ export default {
     },
 
     isAllChecked() {
-      return this.cartInfoList.every(item => item.isChecked == 1);
+      // console.log(this.cartInfoList);
+      return this.cartInfoList.every((item) => item.isChecked == 1);
     },
   },
 }

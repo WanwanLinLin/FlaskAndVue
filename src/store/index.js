@@ -8,6 +8,7 @@ import home from "./home";
 import detail from "./detail";
 import search from "./search";
 import shopcart from "./shopcart";
+import user from "./user";
 
 // 对外暴露store类的实例
 export default new Vuex.Store({
@@ -15,6 +16,7 @@ export default new Vuex.Store({
         home,
         search,
         detail,
-        shopcart
+        shopcart,
+        user
     }
 })
