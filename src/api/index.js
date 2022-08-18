@@ -44,3 +44,20 @@ export const reqUserInfo = ()=>instance({url: '/users/passport/auth/getUserInfo'
 // 退出登录
 export const reqLogout = ()=>instance({url: '/users/passport/logout', method: "get"})
 
+// 获取用户收货地址信息
+export const reqAddressInfo = ()=>instance({url: "/trades/userAddress/auth/findUserAddressList", method: "get"})
+
+// 获取商品清单
+export const reqOrderInfo = ()=>instance({url: "/trades/auth/trade", method: "get"})
+
+// 提交订单的接口
+export const reqSubmitOrder = (tradeNo, data)=>instance({url: `/trades/auth/submitOrder?tradeNo=${tradeNo}`, data, method: "post"})
+
+// 获取支付信息
+export const reqPayInfo = (orderId)=>instance({url: `/trades/payment/weixin/createNative/${orderId}`, method: "get"})
+
+// 获取订单支付状态的接口
+export const reqPayStatus = (orderId)=>instance({url: `/trades/weixin/queryPayStatus/${orderId}`, method: "get"})
+
+// 获取个人中心数据的接口
+export const reqMyOrderList = (page, limit)=>instance({url: `/trades/order/auth/${page}/${limit}`, method: "get"})

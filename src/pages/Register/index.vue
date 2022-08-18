@@ -8,35 +8,42 @@
       </h3>
       <div class="content">
         <label>手机号:</label>
-        <input type="text" placeholder="请输入你的手机号" v-model="phone">
-        <span class="error-msg">错误提示信息</span>
+        <input type="text" placeholder="请输入你的手机号" v-model="phone" name="phone"
+          v-validate="{ required: true, regex: /^1[356789]\d{9}$/ }" :class="{ invalid: errors.has('phone') }">
+        <!-- 表单验证失败：提示错误信息 -->
+        <span class="error-msg">{{ errors.first("phone") }}</span>
       </div>
       <div class="content">
         <label>用户名:</label>
-        <input type="text" placeholder="请输入你的用户名" v-model="username">
-        <span class="error-msg">错误提示信息</span>
+        <input type="text" placeholder="请输入你的用户名" v-model="username" name="username" v-validate="{ required: true }"
+          :class="{ invalid: errors.has('username') }">
+        <span class="error-msg">{{ errors.first("username") }}</span>
       </div>
       <div class="content">
         <label>验证码:</label>
-        <input type="text" placeholder="请输入验证码" v-model="code">
-        <!-- <img ref="code" src="http://182.92.128.115/api/user/passport/code" alt="code"> -->
+        <input type="text" placeholder="请输入你的验证码" v-model="code" name="code"
+          v-validate="{ required: true, regex: /^\d{6}$/ }" :class="{ invalid: errors.has('phone') }">
         <button style="width:100px;height:38px" @click="getCode">获取验证码</button>
-        <span class="error-msg">错误提示信息</span>
+        <span class="error-msg">{{ errors.first("code") }}</span>
       </div>
       <div class="content">
         <label>登录密码:</label>
-        <input type="password" placeholder="请输入你的登录密码" v-model="password">
-        <span class="error-msg">错误提示信息</span>
+        <input type="text" placeholder="请输入你的登录密码" v-model="password" name="password"
+          v-validate="{ required: true, regex: /^[0-9a-zA-Z]{8,20}$/ }" :class="{ invalid: errors.has('password') }">
+        <span class="error-msg">{{ errors.first("password") }}</span>
       </div>
       <div class="content">
         <label>确认密码:</label>
-        <input type="password" placeholder="请输入确认密码" v-model="password1">
-        <span class="error-msg">错误提示信息</span>
+        <!-- is:紧随的判断是否相等规则 -->
+        <input type="text" placeholder="请输入你的确认密码" v-model="password1" name="password1"
+          v-validate="{ required: true, is: password }" :class="{ invalid: errors.has('password1') }">
+        <span class="error-msg">{{ errors.first("password1") }}</span>
       </div>
       <div class="controls">
-        <input name="m1" type="checkbox" :checked="agree">
+        <input type="checkbox" v-model="agree" name="agree" v-validate="{ required: true, 'agree': true }"
+          :class="{ invalid: errors.has('agree') }">
         <span>同意协议并注册《尚品汇用户协议》</span>
-        <span class="error-msg">错误提示信息</span>
+        <span class="error-msg">{{ errors.first("agree") }}</span>
       </div>
       <div class="btn">
         <button @click="userRegister">完成注册</button>
@@ -95,22 +102,26 @@ export default {
     },
 
     async userRegister() {
-      try {
-        const { username, phone, code, password, password1 } = this;
-        (username &&
-        phone && 
-        code && 
-        password == password1 && 
-        await this.$store.dispatch("userRegister", { username, phone, code, password, password1 }));
-        this.$router.push("/login");
-      } catch (error) {
-        alert(error.message);
+      const success = await this.$validator.validateAll();
+      if (success) {
+        // 此时全部的表单验证成功
+        try {
+          const { username, phone, code, password, password1 } = this;
+          (username &&
+            phone &&
+            code &&
+            password == password1 &&
+            await this.$store.dispatch("userRegister", { username, phone, code, password, password1 }));
+          this.$router.push("/login");
+        } catch (error) {
+          alert(error.message);
+        }
       }
     },
 
     // 登录业务
-    async userLogin({commit}, data) {
-      
+    async userLogin({ commit }, data) {
+
     }
   }
 }

@@ -56,7 +56,7 @@
                 <div class="list-wrap">
                   <div class="p-img">
                     <router-link :to="`/detail/${good.id}`">
-                      <img :src="good.defualtImg" />
+                      <img v-lazy="good.defualtImg" style="weight:200px;height:200px" />
                     </router-link>
                   </div>
                   <div class="price">
@@ -85,7 +85,8 @@
           :pageNo="searchParams.pageNo" 
           :pageSize="searchParams.pageSize" 
           :total="total" :continues="3"
-          @getPageNo="getPageNo" />
+          @getPageNo="getPageNo" 
+          />
         </div>
       </div>
     </div>

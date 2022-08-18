@@ -83,7 +83,11 @@ export default {
         (username &&
           password &&
           await this.$store.dispatch("userLogin", { username, password }));
-          this.$router.push("/home");
+          // 判断路由中是否包含query参数,
+          // 若有，则跳到指定路由，否则返回home
+          // this.$router.push("/home");
+          let toPath = this.$route.query.redirect || "/home";
+          this.$router.push(toPath);
       } catch (error) {
         alert(error.message)
       }
