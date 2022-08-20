@@ -38,7 +38,7 @@
                         <img :src="cart.imgUrl" style="width:100px;height:100px">
                         <a href="#" class="block-text">{{cart.skuName}}</a>
                         <span>x {{cart.skuNum}}</span>
-                        <a href="#" class="service">售后申请</a>
+                        <a class="service" @click="tips">售后申请</a>
                     </div>
                 </td>
                 <td :rowspan="order.orderDetailList.length" v-if="index==0" width="8%" class="center">{{order.consignee}}
@@ -167,6 +167,10 @@ export default {
         getPageNo(page) {
             this.page = page;
             this.getData();
+        },
+
+        tips() {
+            alert('抱歉我们没有售后！')
         },
     }
 
