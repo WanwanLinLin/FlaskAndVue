@@ -42,7 +42,7 @@ const actions = {
         let PromiseAll = [];
         // context: 是一个类似于store的小仓库
         getters.cartList.cartInfoList.forEach(item => {
-            let promise = item.isChecked == 1 ? dispatch("deleteCartListBySkuId", item.connect_goods_se_id) : "";
+            let promise = item.isChecked == 1 ? dispatch("deleteCartListBySkuId", item.connect_goods_se_sku_id) : "";
             PromiseAll.push(promise);
         });
         return Promise.all(PromiseAll);
@@ -54,7 +54,7 @@ const actions = {
         state.cartList[0].cartInfoList.forEach((item) => {
         let promise = dispatch("updateCheckedById",
                 {
-                    skuId: item.connect_goods_se_id,
+                    skuId: item.connect_goods_se_sku_id,
                     isChecked
                 });
             promiseAll.push(promise);

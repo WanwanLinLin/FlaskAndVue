@@ -12,7 +12,7 @@
       </div>
       <div class="cart-body">
         <ul class="cart-list" 
-        v-for="(cart, index) in cartInfoList" :key="cart.connect_goods_se_id">
+        v-for="(cart, index) in cartInfoList" :key="cart.connect_goods_se_sku_id">
           <li class="cart-list-con1">
             <input type="checkbox" 
             name="chk_list" 
@@ -125,7 +125,7 @@ export default {
 
     async deleteCartById(cart) {
       try {
-        await this.$store.dispatch("deleteCartListBySkuId", cart.connect_goods_se_id);
+        await this.$store.dispatch("deleteCartListBySkuId", cart.connect_goods_se_sku_id);
         this.getData();
       } catch (error) {
         alert(error.message);
