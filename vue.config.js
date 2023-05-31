@@ -18,8 +18,7 @@ module.exports = defineConfig({
       '/v1': {
         target: 'http://127.0.0.1:8000',
         // target: 'http://39.98.123.211',
-      },
-
+      }
     },
   },
 },

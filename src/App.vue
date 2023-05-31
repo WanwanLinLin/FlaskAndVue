@@ -1,7 +1,7 @@
 <template>
   <div>
     <Header></Header>
-    这里是头部组件
+    <!-- 这里是头部组件 -->
 
     <!-- 这里是路由组件 -->
     <router-view></router-view>

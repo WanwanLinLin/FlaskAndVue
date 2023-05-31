@@ -4,7 +4,7 @@
     <div class="top">
       <div class="container">
         <div class="loginList">
-          <p>Nplus 欢迎您！</p>
+          <p>尚品汇 欢迎您！</p>
           <!-- 用户登录了，显示用户信息与退出登录 -->
           <p v-if="!userName">
             <span>请</span>

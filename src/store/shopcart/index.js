@@ -54,7 +54,7 @@ const actions = {
         state.cartList[0].cartInfoList.forEach((item) => {
         let promise = dispatch("updateCheckedById",
                 {
-                    skuId: item.connect_goods_se_sku_id,
+                    skuId: item.connect_goods_se_id,
                     isChecked
                 });
             promiseAll.push(promise);

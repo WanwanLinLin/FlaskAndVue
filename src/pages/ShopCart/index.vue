@@ -125,7 +125,7 @@ export default {
 
     async deleteCartById(cart) {
       try {
-        await this.$store.dispatch("deleteCartListBySkuId", cart.connect_goods_se_sku_id);
+        await this.$store.dispatch("deleteCartListBySkuId", cart.connect_goods_se_id);
         this.getData();
       } catch (error) {
         alert(error.message);
